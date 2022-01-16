@@ -1,0 +1,36 @@
+# Single Color RGB565 Blob Tracking Example
+import sensor, image, time
+from pyb import UART
+uart = UART(3,19200)
+
+
+thresholds = [(64, 66, -51, 47, -31, 34), #Threshold for blue. These are the Min and Max values of L, A,
+# and B colour space.
+              (38, 40, -5, 2, 40, 46)] #Threshold for yellow
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.QVGA)
+sensor.skip_frames(time = 2000)
+sensor.set_auto_gain(False) # must be turned off for color tracking
+sensor.set_auto_whitebal(False) # must be turned off for color tracking
+clock = time.clock()
+
+while(True):
+    clock.tick()
+    img = sensor.snapshot()
+    for blob in img.find_blobs([thresholds[0]], pixels_threshold=200, area_threshold=200, merge=True):
+        img.draw_rectangle(blob.rect()) #draw a rectangle around the blue object
+        img.draw_cross(blob.cx(), blob.cy()) # add a cross in the centre of the object
+        uart.write("Blue x: ""%d"%blob.cx())
+        uart.write(" y: ""%d\n"%blob.cy())
+        print("Blue x: " "%d"%blob.cx(), "y: ""%d\n"%blob.cy()) #print the x and y values of the object
+
+
+    clock.tick()
+    img = sensor.snapshot()
+    for blob in img.find_blobs([thresholds[1]], pixels_threshold=200, area_threshold=200, merge=True):
+        img.draw_rectangle(blob.rect()) #draw a rectangle around the blue object
+        img.draw_cross(blob.cx(), blob.cy()) # add a cross in the centre of the object
+        uart.write("Yellow x: ""%d"%blob.cx())
+        uart.write(" y: ""%d\n"%blob.cy())
+        print("Yellow x: " "%d"%blob.cx(), "y: ""%d\n"%blob.cy())  #print the x and y values of the object
