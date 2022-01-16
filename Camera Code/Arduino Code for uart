@@ -1,0 +1,11 @@
+void setup(){
+  Serial.begin(19200);
+  
+}
+
+void loop(){
+  if(Serial.available()){
+    byte CamOut = Serial.read();
+    Serial.write(CamOut);
+  }
+}
